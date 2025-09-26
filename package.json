@@ -1,0 +1,25 @@
+{
+  "name": "mcp-telegram-bot",
+  "version": "1.0.0",
+  "description": "MCP server for Telegram bot integration",
+  "main": "src/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node src/server.js",
+    "dev": "npx tsx src/server.ts",
+    "get-chat-id": "node src/getChatId.js"
+  },
+  "dependencies": {
+    "fastmcp": "^3.18.0",
+    "telegraf": "^4.16.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -4,8 +4,9 @@ MCP server for sending messages and asking questions through Telegram bot.
 
 ## Features
 
-- **ask(questionText)** - Send question to Telegram chat and wait for user response
+- **ask(questionText)** - Send question to Telegram chat and wait for user response (accepts text messages, captions, or returns description of media files)
 - **send(textMessage)** - Send message to Telegram chat
+- **sendFile(path)** - Send file to Telegram chat
 
 ## Setup
 

@@ -1,6 +1,6 @@
 import { FastMCP } from 'fastmcp';
 import { z } from 'zod';
-import { Telegraf } from 'telegraf';
+import { Telegraf, Input } from 'telegraf';
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -40,11 +40,34 @@ let waitingForAnswer = false;
 let currentQuestionId: string | null = null;
 
 // Handle incoming messages
-bot.on('text', (ctx) => {
+bot.on('message', (ctx) => {
   if (waitingForAnswer && currentQuestionId) {
     const pending = pendingQuestions.get(currentQuestionId);
     if (pending) {
-      pending.resolve(ctx.message.text);
+      let response = '';
+
+      // Check for text or caption
+      if (ctx.message.text) {
+        response = ctx.message.text;
+      } else if ('caption' in ctx.message && ctx.message.caption) {
+        response = ctx.message.caption;
+      } else if ('document' in ctx.message && ctx.message.document) {
+        response = `User sent a document: ${ctx.message.document.file_name || 'unnamed file'}`;
+      } else if ('photo' in ctx.message && ctx.message.photo) {
+        response = 'User sent a photo';
+      } else if ('video' in ctx.message && ctx.message.video) {
+        response = 'User sent a video';
+      } else if ('audio' in ctx.message && ctx.message.audio) {
+        response = `User sent audio: ${ctx.message.audio.file_name || 'unnamed audio'}`;
+      } else if ('voice' in ctx.message && ctx.message.voice) {
+        response = 'User sent a voice message';
+      } else if ('sticker' in ctx.message && ctx.message.sticker) {
+        response = 'User sent a sticker';
+      } else {
+        response = 'User sent a message (unknown type)';
+      }
+
+      pending.resolve(response);
       pendingQuestions.delete(currentQuestionId);
       waitingForAnswer = false;
       currentQuestionId = null;
@@ -114,6 +137,26 @@ server.addTool({
       return '';
     } catch (error) {
       throw new Error(`Error sending message: ${error}`);
+    }
+  },
+});
+
+// Tool: sendFile - Send a file to telegram chat
+server.addTool({
+  name: 'sendFile',
+  description: 'Send a file to telegram/tg group via bot',
+  parameters: z.object({
+    path: z.string().describe('The absolute path to the file to send'),
+  }),
+  execute: async (args) => {
+    try {
+      // Send file to chat
+      await bot.telegram.sendDocument(chatId, Input.fromLocalFile(args.path));
+
+      // Return empty response
+      return '';
+    } catch (error) {
+      throw new Error(`Error sending file: ${error}`);
     }
   },
 });

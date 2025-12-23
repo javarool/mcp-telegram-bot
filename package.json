@@ -10,9 +10,9 @@
     "get-chat-id": "node src/getChatId.js"
   },
   "dependencies": {
-    "fastmcp": "^3.18.0",
-    "telegraf": "^4.16.3",
-    "zod": "^3.23.8"
+    "fastmcp": "^3.25.4",
+    "zod": "^3.25.76",
+    "telegraf": "^4.16.3"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

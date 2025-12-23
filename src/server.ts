@@ -16,7 +16,7 @@ const server = new FastMCP({
 
 // Initialize Telegram bot
 const token = process.env.TELEGRAM_BOT_TOKEN;
-const chatId = process.env.TELEGRAM_CHAT_ID;
+const chatId = process.env.CHAT_ID || process.env.TELEGRAM_CHAT_ID;
 
 if (!token) {
   console.error('Error: Set TELEGRAM_BOT_TOKEN environment variable');
@@ -24,7 +24,7 @@ if (!token) {
 }
 
 if (!chatId) {
-  console.error('Error: Set TELEGRAM_CHAT_ID environment variable');
+  console.error('Error: Set CHAT_ID or TELEGRAM_CHAT_ID environment variable');
   process.exit(1);
 }
 
@@ -45,23 +45,24 @@ bot.on('message', (ctx) => {
     const pending = pendingQuestions.get(currentQuestionId);
     if (pending) {
       let response = '';
+      const message = ctx.message;
 
       // Check for text or caption
-      if (ctx.message.text) {
-        response = ctx.message.text;
-      } else if ('caption' in ctx.message && ctx.message.caption) {
-        response = ctx.message.caption;
-      } else if ('document' in ctx.message && ctx.message.document) {
-        response = `User sent a document: ${ctx.message.document.file_name || 'unnamed file'}`;
-      } else if ('photo' in ctx.message && ctx.message.photo) {
+      if ('text' in message && message.text) {
+        response = message.text;
+      } else if ('caption' in message && message.caption) {
+        response = message.caption;
+      } else if ('document' in message && message.document) {
+        response = `User sent a document: ${message.document.file_name || 'unnamed file'}`;
+      } else if ('photo' in message && message.photo) {
         response = 'User sent a photo';
-      } else if ('video' in ctx.message && ctx.message.video) {
+      } else if ('video' in message && message.video) {
         response = 'User sent a video';
-      } else if ('audio' in ctx.message && ctx.message.audio) {
-        response = `User sent audio: ${ctx.message.audio.file_name || 'unnamed audio'}`;
-      } else if ('voice' in ctx.message && ctx.message.voice) {
+      } else if ('audio' in message && message.audio) {
+        response = `User sent audio: ${message.audio.file_name || 'unnamed audio'}`;
+      } else if ('voice' in message && message.voice) {
         response = 'User sent a voice message';
-      } else if ('sticker' in ctx.message && ctx.message.sticker) {
+      } else if ('sticker' in message && message.sticker) {
         response = 'User sent a sticker';
       } else {
         response = 'User sent a message (unknown type)';
